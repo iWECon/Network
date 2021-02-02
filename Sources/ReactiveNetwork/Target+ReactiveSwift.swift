@@ -11,8 +11,8 @@ import Network
 
 public extension Target where Self: TargetSharing {
     
-    var request: SignalProducer<ResponseResult, MoyaError> {
-        Self.shared.reactive.request(self).map { (response) -> ResponseResult in
+    var request: SignalProducer<ResponseResult, ResponseError> {
+        Self.shared.reactive.request(self).mapError({ ResponseError(from: $0) }).map { (response) -> ResponseResult in
             ResponseResult(lookup: Lookup(try? response.mapJSON()), response: response)
         }
     }

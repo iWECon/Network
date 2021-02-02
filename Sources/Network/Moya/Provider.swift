@@ -45,15 +45,4 @@ open class Provider<T: Target>: MoyaProvider<T> {
         )
     }
     
-    open class func alamofireSession() -> Session {
-        let configuration = URLSessionConfiguration.default
-        configuration.headers = .default
-
-        let session = Alamofire.Session(
-            configuration: configuration,
-            startRequestsImmediately: false,
-            eventMonitors: [kEventMonitor()]
-        )
-        return session
-    }
 }

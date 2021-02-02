@@ -28,7 +28,7 @@ let package = Package(
         .target(name: "RxNetwork", dependencies: ["Network", "Moya", .product(name: "RxMoya", package: "Moya")]),
         .testTarget(
             name: "NetworkTests",
-            dependencies: ["Network"]),
+            dependencies: ["Network", "Moya", "ReactiveNetwork"]),
     ],
     swiftLanguageVersions: [
         .v5

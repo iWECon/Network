@@ -29,6 +29,9 @@ extension Github: Target, TargetSharing {
         .get
     }
     
+    var validationType: ValidationType {
+        .customCodes([200])
+    }
 }
 
 struct TargetConfigure: TargetGlobalProvider {

@@ -25,8 +25,15 @@ public extension SignalProducer {
             }
             if times > 0 {
                 let delay = interval / TimeInterval(times)
-                assert({ print("❌ Request retry after \(delay) seconds."); return true}())
-                retryProducer = producer.delay(delay, on: scheduler).retry(when: when, times: times - 1, interval: interval, on: scheduler)
+                
+                retryProducer = SignalProducer<Value, Error>.empty
+                    .delay(delay, on: scheduler)
+                    .concat(
+                        producer.retry(when: when, times: times - 1, interval: interval, on: scheduler)
+                            .on(starting: {
+                                assert({ print("❌ Request retry after \(delay) seconds."); return true}())
+                            })
+                    )
             }
             return retryProducer
         }
