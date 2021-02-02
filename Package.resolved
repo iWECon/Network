@@ -21,11 +21,11 @@
       },
       {
         "package": "Moya",
-        "repositoryURL": "https://github.com/Moya/Moya.git",
+        "repositoryURL": "https://github.com/iWECon/Moya.git",
         "state": {
           "branch": null,
-          "revision": "b3e5a233e0d85fd4d69f561c80988590859c7dee",
-          "version": "14.0.0"
+          "revision": "15616dc222fca7f7feb830dfbb32ed329852d7c8",
+          "version": "14.1.0"
         }
       },
       {

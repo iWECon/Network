@@ -8,6 +8,7 @@ import ReactiveMoya
 import ReactiveSwift
 import Lookup
 import Network
+import Alamofire
 
 public extension Target where Self: TargetSharing {
     
@@ -15,6 +16,19 @@ public extension Target where Self: TargetSharing {
         Self.shared.reactive.request(self).map { (response) -> ResponseResult in
             ResponseResult(lookup: Lookup(try? response.mapJSON()), response: response)
         }
+    }
+    
+    func request(retryWhen: @escaping (MoyaError) -> Bool,
+                 times: UInt,
+                 interval: TimeInterval = 3,
+                 on scheduler: DateScheduler = QueueScheduler.main) -> SignalProducer<ResponseResult, MoyaError> {
+        var producer = self.request
+        if times > 0 {
+            producer = producer.flatMapError { (moyaError) -> SignalProducer<ResponseResult, MoyaError> in
+                SignalProducer<ResponseResult, MoyaError>(error: moyaError)
+            }.retry(when: retryWhen, times: times - 1, interval: interval, on: scheduler)
+        }
+        return producer
     }
     
 }

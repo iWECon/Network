@@ -4,6 +4,7 @@
 
 import UIKit
 
+/// Behavior of target
 public struct Behavior: OptionSet {
     public let rawValue: Int64
     

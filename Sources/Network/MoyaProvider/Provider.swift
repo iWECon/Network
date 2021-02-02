@@ -19,12 +19,12 @@ open class Provider<T: Target>: MoyaProvider<T> {
     }
     
     override public init(endpointClosure: @escaping MoyaProvider<T>.EndpointClosure = Provider.endPointMapping,
-                  requestClosure: @escaping MoyaProvider<T>.RequestClosure = MoyaProvider<T>.defaultRequestMapping,
-                  stubClosure: @escaping MoyaProvider<T>.StubClosure = MoyaProvider.neverStub,
-                  callbackQueue: DispatchQueue? = nil,
-                  session: Session = MoyaProvider<T>.defaultAlamofireSession(),
-                  plugins: [PluginType] = Provider<T>.defaultPlugins,
-                  trackInflights: Bool = false) {
+                         requestClosure: @escaping MoyaProvider<T>.RequestClosure = MoyaProvider<T>.defaultRequestMapping,
+                         stubClosure: @escaping MoyaProvider<T>.StubClosure = MoyaProvider.neverStub,
+                         callbackQueue: DispatchQueue? = nil,
+                         session: Session = Provider.alamofireSession(),
+                         plugins: [PluginType] = Provider<T>.defaultPlugins,
+                         trackInflights: Bool = true) {
         
         super.init(endpointClosure: endpointClosure,
                    requestClosure: requestClosure,
@@ -45,4 +45,15 @@ open class Provider<T: Target>: MoyaProvider<T> {
         )
     }
     
+    open class func alamofireSession() -> Session {
+        super.defaultAlamofireSession()
+//        let configuration = URLSessionConfiguration.default
+//        configuration.headers = .default
+//
+//        let session = Alamofire.Session(
+//            configuration: configuration,
+//            startRequestsImmediately: false, interceptor: Interceptor(interceptors: [kInterceptor()]), eventMonitors: [kEventMonitor()]
+//        )
+//        return session
+    }
 }

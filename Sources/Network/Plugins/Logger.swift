@@ -101,7 +101,6 @@ extension Logger.Configuration {
         case .success(let response):
             logs += format(with: options, request: response.request, target: target)
             logs += logNetworkResponse(response.response, data: response.data, target: target)
-            break
         case .failure(let moyaError):
             var response: HTTPURLResponse?
             switch moyaError {
@@ -112,14 +111,19 @@ extension Logger.Configuration {
             default:
                 break
             }
-            logs += logNetworkResponse(response, data: nil, target: target)
+            logs += format(with: options, request: nil, target: target)
+            if response != nil {
+                logs += logNetworkResponse(response, data: nil, target: target)
+            }
+            logs += "\n❌ [ERROR]: errorCode: \(moyaError.errorCode), info: \(moyaError.errorDescription ?? "[EMPTY]")"
         }
+        logs += endLine
         print(logs)
     }
     
     func logNetworkResponse(_ response: HTTPURLResponse?, data: Data?, target: TargetType) -> String {
         guard let response = response else {
-            return prefixMark + "⚠️ Received empty network response for \(target)"
+            return "\n🌈 Response: ⚠️ Received empty network response for \(target)"
         }
         
         var logs = ""
@@ -135,16 +139,19 @@ extension Logger.Configuration {
             }
             logs += "\n🌈 Response: " + (String(data: responseDataFormatter(), encoding: .utf8) ?? "Empty")
         } else {
-            logs = "\n🌈 Response: " + response.description
+            func responseHeaders() -> String {
+                let headers = response.headers.dictionary.prettyPrinted() ?? ""
+                if headers.isEmpty {
+                    return "[EMPTY]"
+                }
+                return headers
+            }
+            logs += "\n🌈 Response: ❌, Status Code: \(response.statusCode), Headers: \(responseHeaders())"
         }
         return logs
     }
     
     func format(with options: OutputOption, willSend: Bool = false, request: URLRequest?, target: Target, sessionHeaders: [String: String]? = nil) -> String {
-        guard let request = request else {
-            return ""
-        }
-        
         /**
          | 🌍 [NETWORK.WILLSEND]
          |    [URL]: xxxxxx
@@ -156,27 +163,27 @@ extension Logger.Configuration {
             logs += prefixMark + "\t [URL]: " + target.baseURL.absoluteString + target.path
         }
         if options.contains(.method) {
-            logs += "\n" + prefixMark + " [METHOD]: " + (request.method?.rawValue ?? "[UNKNOWN]")
+            logs += "\n" + prefixMark + " [METHOD]: " + target.method.rawValue
         }
         if options.contains(.path) {
             logs += "\n" + prefixMark + "\t[PATH]: \(target.path) \(willSend ? "WillSend" : "DidReceive")"
         }
-        if options.contains(.headers), let heads = request.allHTTPHeaderFields, !heads.isEmpty {
+        if let request = request, options.contains(.headers), let heads = request.allHTTPHeaderFields, !heads.isEmpty {
             var headers = heads
             if let sessionHeaders = sessionHeaders {
                 headers.merge(sessionHeaders) { $1 }
             }
             logs += "\n" + "Request HTTP Header Fields: " + (headers.prettyPrinted() ?? "[EMPTY]")
         }
-        if options.contains(.params) {
+        if let request = request, options.contains(.params) {
             // body stream
             if let bodyStream = request.httpBodyStream {
                 logs += "\n" + "Request http body stream: \(bodyStream.description)"
             }
             
             // url params
-            let urlParams = request.url?.params().prettyPrinted() ?? "[EMPTY]"
-            logs += "\n" + "Request URL Parameters: \(urlParams)"
+            let urlParams = (request.url?.params() ?? [:])
+            logs += "\n" + "Request URL Parameters: \(urlParams.isEmpty ? "[Empty]" : urlParams.prettyPrinted() ?? "[Empty]")"
             
             // http body params
             if let bodyData = request.httpBody, let bodyParams = String(data: bodyData, encoding: .utf8) {

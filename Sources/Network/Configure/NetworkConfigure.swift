@@ -11,10 +11,14 @@ public struct NetworkConfigure {
     /// request transformation provider
     public var transformation: RequestTransformationProvider?
     
+    public var retrier: RequestRetrierProvider?
+    
     /// request response validation provider
     public var validation: ResponseValidationProvider?
     
     /// request logger
     public var logger: Logger = Logger.shared
     
+    /// network reachability
+    public lazy var networkReachability = NetworkReachability.shared
 }

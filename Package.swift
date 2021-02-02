@@ -14,7 +14,8 @@ let package = Package(
         .library(name: "RxNetwork", targets: ["RxNetwork"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Moya/Moya.git", .upToNextMajor(from: "14.0.0")),
+        //.package(url: "https://github.com/Moya/Moya.git", .upToNextMajor(from: "14.0.0")),
+        .package(url: "https://github.com/iWECon/Moya.git", .upToNextMajor(from: "14.1.0")),
         .package(url: "https://github.com/iWECon/Lookup", from: "1.0.0"),
     ],
     targets: [
@@ -26,9 +27,9 @@ let package = Package(
         ),
         .target(name: "ReactiveNetwork", dependencies: ["Network", "Moya", .product(name: "ReactiveMoya", package: "Moya")]),
         .target(name: "RxNetwork", dependencies: ["Network", "Moya", .product(name: "RxMoya", package: "Moya")]),
-        .testTarget(
-            name: "NetworkTests",
-            dependencies: ["Network", "RxNetwork"]),
+        
+        .testTarget(name: "NetworkTests", dependencies: ["Network", "ReactiveNetwork"]),
+        .testTarget(name: "RxNetworkTests", dependencies: ["Network", "RxNetwork"]),
     ],
     swiftLanguageVersions: [
         .v5

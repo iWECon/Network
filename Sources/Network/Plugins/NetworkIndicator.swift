@@ -35,24 +35,16 @@ struct NetworkIndicatorHandler: PluginType {
     }
     
     public func willSend(_ request: RequestType, target: TargetType) {
-        guard let target =  target as? Target else {
-            networkActivityClosure(.began)
+        guard let target =  target as? Target, !target.behavior.contains(.hideActivityIndicator) else {
             return
         }
-        guard target.behavior.contains(.hideActivityIndicator) else {
-            networkActivityClosure(.began)
-            return
-        }
+        networkActivityClosure(.began)
     }
     
     public func didReceive(_ result: Result<Response, MoyaError>, target: TargetType) {
-        guard let target =  target as? Target else {
-            networkActivityClosure(.ended)
+        guard let target =  target as? Target, !target.behavior.contains(.hideActivityIndicator) else {
             return
         }
-        guard target.behavior.contains(.hideActivityIndicator) else {
-            networkActivityClosure(.ended)
-            return
-        }
+        networkActivityClosure(.ended)
     }
 }
