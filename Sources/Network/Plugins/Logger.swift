@@ -112,7 +112,11 @@ extension Logger.Configuration {
             default:
                 break
             }
-            logs += logNetworkResponse(response, data: nil, target: target)
+            logs += format(with: options, request: nil, target: target)
+            if response != nil {
+                logs += logNetworkResponse(response, data: nil, target: target)
+            }
+            logs += "\n❌ [ERROR]: errorCode: \(moyaError.errorCode), errorName: \(moyaError.errorName), info: \(moyaError.errorDescription ?? "[EMPTY]")"
         }
         print(logs)
     }
@@ -133,7 +137,7 @@ extension Logger.Configuration {
                     return data
                 }
             }
-            logs += "\n🌈 Response: " + (String(data: responseDataFormatter(), encoding: .utf8) ?? "Empty")
+            logs += "\n🌈 Response: ✅, Status Code: \(response.statusCode), " + (String(data: responseDataFormatter(), encoding: .utf8) ?? "Empty")
         } else {
             logs = "\n🌈 Response: " + response.description
         }
